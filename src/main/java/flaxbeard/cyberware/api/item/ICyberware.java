@@ -1,13 +1,18 @@
 package flaxbeard.cyberware.api.item;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DynamicOps;
 import net.minecraft.core.NonNullList;
+import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 public interface ICyberware {
     BodyRegion getBodyRegion(ItemStack stack);
@@ -76,7 +81,7 @@ public interface ICyberware {
         }
     }
 
-    enum BodyRegion {
+    enum BodyRegion implements StringRepresentable {
         EYES(12, "eyes"),
         CRANIUM(11, "cranium"),
         HEART(14, "heart"),
@@ -110,9 +115,9 @@ public interface ICyberware {
             return slotNumber;
         }
 
-        public static BodyRegion getSlotByPage(int page) {
+        public static BodyRegion valueOf(int slotNumber) {
             for (BodyRegion slot : values()) {
-                if (slot.getSlotNumber() == page) {
+                if (slot.getSlotNumber() == slotNumber) {
                     return slot;
                 }
             }
@@ -129,6 +134,16 @@ public interface ICyberware {
 
         public boolean hasEssential() {
             return hasEssential;
+        }
+
+        public static final Codec<BodyRegion> CODEC = Codec.STRING.xmap(
+                name -> BodyRegion.valueOf(name.toUpperCase()),
+                BodyRegion::name
+        );
+
+        @Override
+        public @NotNull String getSerializedName() {
+            return name().toLowerCase();
         }
     }
 

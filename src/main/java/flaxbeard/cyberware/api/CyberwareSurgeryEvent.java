@@ -23,9 +23,8 @@ public class CyberwareSurgeryEvent extends EntityEvent {
 
         public Pre(LivingEntity livingEntity, ItemStackHandler inventoryActual, ItemStackHandler inventoryTarget) {
             super(livingEntity);
-            //TODO Providerが何か、ItemStackHandlerの仕様更新について調べる
-            this.inventoryActual = new ItemStackHandler(120);
-
+            this.inventoryActual = inventoryActual != null ? inventoryActual : new ItemStackHandler(120);
+            this.inventoryTarget = inventoryTarget != null ? inventoryTarget : new ItemStackHandler(120);
         }
 
         public ItemStackHandler getActualCyberwares() {

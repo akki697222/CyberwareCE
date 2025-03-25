@@ -6,10 +6,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CyberwareHudEvent extends Event {
-    private List<IHudElement> elements = new ArrayList<>();
+    private final List<IHudElement> elements = new ArrayList<>();
     private boolean hudjackAvailable;
-    private int width;
-    private int height;
+    private final int width;
+    private final int height;
 
     public CyberwareHudEvent(int width, int height, boolean hudjackAvailable)
     {

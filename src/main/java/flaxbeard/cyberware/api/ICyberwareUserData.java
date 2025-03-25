@@ -1,7 +1,7 @@
 package flaxbeard.cyberware.api;
 
+import flaxbeard.cyberware.api.hud.HudData;
 import net.minecraft.core.NonNullList;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import flaxbeard.cyberware.api.item.ICyberware.BodyRegion;
@@ -10,17 +10,12 @@ import flaxbeard.cyberware.api.item.ICyberware.ISidedLimb.Side;
 import javax.annotation.Nonnull;
 import java.util.List;
 
-public interface ICyberwareUserData
-{
+public interface ICyberwareUserData {
     NonNullList<ItemStack> getInstalledCyberware(BodyRegion slot);
     void setInstalledCyberware(LivingEntity livingEntity, BodyRegion slot, List<ItemStack> cyberware);
     void setInstalledCyberware(LivingEntity livingEntity, BodyRegion slot, NonNullList<ItemStack> cyberware);
     boolean isCyberwareInstalled(ItemStack cyberware);
     int getCyberwareRank(ItemStack cyberware);
-
-    CompoundTag serializeNBT();
-    void deserializeNBT(CompoundTag tagCompound);
-
 
     boolean hasEssential(BodyRegion slot);
     void setHasEssential(BodyRegion slot, boolean hasLeft, boolean hasRight);
@@ -49,8 +44,8 @@ public interface ICyberwareUserData
     ItemStack getHotkey(int i);
     Iterable<Integer> getHotkeys();
     List<ItemStack> getHudjackItems();
-    void setHudData(CompoundTag tagCompound);
-    CompoundTag getHudData();
+    void setHudData(HudData tagCompound);
+    HudData getHudData();
     boolean hasOpenedRadialMenu();
     void setOpenedRadialMenu(boolean hasOpenedRadialMenu);
     void setHudColor(int color);

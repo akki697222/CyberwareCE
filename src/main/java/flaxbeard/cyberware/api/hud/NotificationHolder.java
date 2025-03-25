@@ -1,10 +1,10 @@
 package flaxbeard.cyberware.api.hud;
 
-public class Notification {
+public class NotificationHolder {
     private float time;
     private INotification notification;
 
-    public Notification(float time, INotification notification)
+    public NotificationHolder(float time, INotification notification)
     {
         this.time = time;
         this.notification = notification;

@@ -10,24 +10,42 @@ public abstract class AbstractHudElement implements IHudElement {
     private int width = 0;
     private int height = 0;
     private boolean hidden = false;
-    private String name;
+    private final String name;
 
     private AnchorHorizontal defaultHAnchor = AnchorHorizontal.LEFT;
     private AnchorVertical defaultVAnchor = AnchorVertical.TOP;
     private AnchorHorizontal hAnchor = AnchorHorizontal.LEFT;
     private AnchorVertical vAnchor = AnchorVertical.TOP;
 
-    public AbstractHudElement(String name)
-    {
+    public AbstractHudElement(String name) {
         this.name = name;
     }
 
     @Override
     public void render(Player player, int scaledWidth, int scaledHeight, boolean isHUDjackAvailable, boolean isConfigOpen, float partialTicks) {
+        int x = getX();
+        int y = getY();
+        if (getHorizontalAnchor() == AnchorHorizontal.RIGHT) {
+            x = scaledWidth - x - getWidth();
+        }
+        if (getVerticalAnchor() == AnchorVertical.BOTTOM) {
+            y = scaledHeight - y - getHeight();
+        }
 
+        renderElement(x, y, player, scaledWidth, scaledHeight, isHUDjackAvailable, isConfigOpen, partialTicks);
     }
 
-    public abstract void renderElement(int x, int y, Player player, int scaledWidth, int scaledHeight, boolean hudjackAvailable, boolean isConfigOpen, float partialTicks);
+    public abstract void renderElement(int x, int y, Player player, int scaledWidth, int scaledHeight, boolean hudjackAvailable, boolean isConfigOpen, float partialTick);
+
+    public void setDefaultX(int x) {
+        this.defaultX = x;
+        setX(x);
+    }
+
+    public void setDefaultY(int y) {
+        this.defaultY = y;
+        setY(y);
+    }
 
     @Override
     public boolean canMove() {
@@ -35,27 +53,38 @@ public abstract class AbstractHudElement implements IHudElement {
     }
 
     @Override
-    public void setX(int x)
-    {
+    public void setX(int x) {
         this.x = x;
     }
 
     @Override
-    public void setY(int y)
-    {
+    public void setY(int y) {
         this.y = y;
     }
 
-    public void setDefaultX(int x)
-    {
-        this.defaultX = x;
-        setX(x);
+    @Override
+    public int getWidth() {
+        return width;
     }
 
-    public void setDefaultY(int y)
-    {
-        this.defaultY = y;
-        setY(y);
+    @Override
+    public int getHeight() {
+        return height;
+    }
+
+    @Override
+    public boolean canHide() {
+        return true;
+    }
+
+    @Override
+    public void setHidden(boolean hidden) {
+        this.hidden = hidden;
+    }
+
+    @Override
+    public boolean isHidden() {
+        return hidden;
     }
 
     @Override
@@ -69,83 +98,45 @@ public abstract class AbstractHudElement implements IHudElement {
     }
 
     @Override
-    public int getWidth()
-    {
-        return width;
-    }
-
-    @Override
-    public int getHeight()
-    {
-        return height;
-    }
-
-    @Override
-    public boolean canHide()
-    {
-        return true;
-    }
-
-    @Override
-    public void setHidden(boolean hidden)
-    {
-        this.hidden = hidden;
-    }
-
-    @Override
-    public boolean isHidden()
-    {
-        return hidden;
-    }
-
-    @Override
     public AnchorHorizontal getHorizontalAnchor() {
         return hAnchor;
     }
 
-    @Override
-    public void setHorizontalAnchor(AnchorHorizontal anchor)
-    {
-        hAnchor = anchor;
-    }
-
-    public void setDefaultHorizontalAnchor(AnchorHorizontal anchor)
-    {
+    public void setDefaultHorizontalAnchor(AnchorHorizontal anchor) {
         defaultHAnchor = anchor;
         setHorizontalAnchor(anchor);
     }
 
     @Override
-    public AnchorVertical getVerticalAnchor()
-    {
+    public void setHorizontalAnchor(AnchorHorizontal anchor) {
+        hAnchor = anchor;
+    }
+
+    @Override
+    public AnchorVertical getVerticalAnchor() {
         return vAnchor;
     }
 
-    public void setDefaultVerticalAnchor(AnchorVertical anchor)
-    {
+    public void setDefaultVerticalAnchor(AnchorVertical anchor) {
         defaultVAnchor = anchor;
         setVerticalAnchor(anchor);
     }
 
     @Override
-    public void setVerticalAnchor(AnchorVertical anchor)
-    {
+    public void setVerticalAnchor(AnchorVertical anchor) {
         vAnchor = anchor;
     }
 
-    public void setWidth(int w)
-    {
+    public void setWidth(int w) {
         width = w;
     }
 
-    public void setHeight(int h)
-    {
+    public void setHeight(int h) {
         height = h;
     }
 
     @Override
-    public void reset()
-    {
+    public void reset() {
         x = defaultX;
         y = defaultY;
         vAnchor = defaultVAnchor;
@@ -153,14 +144,12 @@ public abstract class AbstractHudElement implements IHudElement {
     }
 
     @Override
-    public String getUniqueName()
-    {
+    public String getUniqueName() {
         return name;
     }
 
     @Override
-    public void save(IHudSaveData data)
-    {
+    public void save(IHudSaveData data) {
         data.setInteger("x", x);
         data.setInteger("y", y);
         data.setBoolean("top", vAnchor == AnchorVertical.TOP);
@@ -168,8 +157,7 @@ public abstract class AbstractHudElement implements IHudElement {
     }
 
     @Override
-    public void load(IHudSaveData data)
-    {
+    public void load(IHudSaveData data) {
         x = data.getInteger("x");
         y = data.getInteger("y");
         vAnchor = data.getBoolean("top") ? AnchorVertical.TOP : AnchorVertical.BOTTOM;
