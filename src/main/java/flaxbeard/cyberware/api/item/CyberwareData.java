@@ -6,6 +6,13 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 public class CyberwareData {
     private boolean isEnabled;
     private int hotkey;
+    private ICyberware.Quality quality;
+
+    public CyberwareData(boolean isEnabled, int hotkey, ICyberware.Quality quality) {
+        this.isEnabled = isEnabled;
+        this.hotkey = hotkey;
+        this.quality = quality;
+    }
 
     public CyberwareData(boolean isEnabled, int hotkey) {
         this.isEnabled = isEnabled;
@@ -42,10 +49,19 @@ public class CyberwareData {
         return hotkey;
     }
 
+    public ICyberware.Quality getQuality() {
+        return quality;
+    }
+
+    public void setQuality(ICyberware.Quality quality) {
+        this.quality = quality;
+    }
+
     public static final Codec<CyberwareData> CODEC = RecordCodecBuilder.create(instance ->
             instance.group(
                     Codec.BOOL.fieldOf("enabled").forGetter(CyberwareData::isEnabled),
-                    Codec.INT.fieldOf("hotkey").forGetter(CyberwareData::getHotkey)
+                    Codec.INT.fieldOf("hotkey").forGetter(CyberwareData::getHotkey),
+                    ICyberware.Quality.CODEC.fieldOf("quality").forGetter(CyberwareData::getQuality)
             ).apply(instance, CyberwareData::new)
     );
 }

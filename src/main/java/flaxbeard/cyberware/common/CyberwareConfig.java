@@ -128,8 +128,22 @@ public class CyberwareConfig {
     public static final ModConfigSpec SPEC = BUILDER.build();
 
     public static int essence;
+    public static int criticalEssence;
     public static double engineeringChance;
+    public static double scannerChance;
+    public static double scannerChanceAddl;
+    public static int scannerTime;
     public static boolean mobsEnableCyberZombies;
+    public static int mobsCyberZombieWeight;
+    public static double mobsCyberZombieDropRarity;
+    public static boolean enableFloat;
+    public static double hudlensFloat;
+    public static boolean surgeryCrafting;
+    public static List<? extends String> defaultStartingItems;
+    public static boolean defaultDrop;
+    public static double dropChance;
+    public static String fistMiningToolName;
+    public static boolean intEnderIo;
 
     @SubscribeEvent
     public static void onLoad(final ModConfigEvent.Loading event) {
@@ -147,7 +161,21 @@ public class CyberwareConfig {
 
     private static void loadConfigValues() {
         essence = ESSENCE.get();
+        criticalEssence = CRITICAL_ESSENCE.get();
         engineeringChance = ENGINEERING_CHANCE.get();
+        scannerChance = SCANNER_CHANCE.get();
+        scannerChanceAddl = SCANNER_CHANCE_ADDL.get();
+        scannerTime = SCANNER_TIME.get();
         mobsEnableCyberZombies = MOBS_ENABLE_CYBER_ZOMBIES.get();
+        mobsCyberZombieWeight = MOBS_CYBER_ZOMBIE_WEIGHT.get();
+        mobsCyberZombieDropRarity = MOBS_CYBER_ZOMBIE_DROP_RARITY.get();
+        enableFloat = ENABLE_FLOAT.get();
+        hudlensFloat = HUDLENS_FLOAT.get();
+        surgeryCrafting = SURGERY_CRAFTING.get();
+        defaultStartingItems = DEFAULT_STARTING_ITEMS.get();
+        defaultDrop = DEFAULT_DROP.get();
+        dropChance = DROP_CHANCE.get();
+        fistMiningToolName = FIST_MINING_TOOL_NAME.get();
+        intEnderIo = INT_ENDER_IO.get();
     }
 }

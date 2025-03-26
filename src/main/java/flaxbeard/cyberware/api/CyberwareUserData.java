@@ -149,7 +149,7 @@ public class CyberwareUserData implements ICyberwareUserData {
 
     @Override
     public ItemStack getCyberware(ItemStack cyberware) {
-        for (ItemStack itemStack : getInstalledCyberware(CyberwareAPI.getCyberware(cyberware).getBodyRegion(cyberware))) {
+        for (ItemStack itemStack : getInstalledCyberware(CyberwareAPI.getCyberware(cyberware).getBodyRegion())) {
             if (!itemStack.isEmpty() && ItemStack.isSameItemSameComponents(itemStack, cyberware)) {
                 return itemStack;
             }
@@ -185,7 +185,7 @@ public class CyberwareUserData implements ICyberwareUserData {
                     if (cyberware instanceof ISpecialBattery) {
                         specialBatteries.add(itemStackCyberware);
                     } else {
-                        powerCapacity += cyberware.getCapacity(itemStackCyberware);
+                        powerCapacity += cyberware.getEnergyCapacity();
                     }
                 }
             }

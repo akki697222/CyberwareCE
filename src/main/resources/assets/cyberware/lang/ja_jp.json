@@ -1,0 +1,13 @@
+{
+  "item.cyberware.component_actuator": "駆動装置",
+  "item.cyberware.component_reactor": "バイオリアクター",
+  "item.cyberware.component_titanium": "チタンメッシュ",
+  "item.cyberware.component_ssc": "ソリッドステート回路",
+  "item.cyberware.component_plating": "クロムメッキ",
+  "item.cyberware.component_fiberoptics": "光ファイバー",
+  "item.cyberware.component_fullerene": "フラーレン微細構造体",
+  "item.cyberware.component_synthnerves": "合成神経",
+  "item.cyberware.component_storage": "ストレージセル",
+  "item.cyberware.component_microelectric": "微小電気セル",
+  "item.cyberware.hud_lens": "HUDレンズ"
+}

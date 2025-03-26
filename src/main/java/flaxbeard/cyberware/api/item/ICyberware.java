@@ -2,6 +2,7 @@ package flaxbeard.cyberware.api.item;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.NonNullList;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.entity.LivingEntity;
@@ -15,26 +16,14 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 public interface ICyberware {
-    BodyRegion getBodyRegion(ItemStack stack);
-    int installedStackSize(ItemStack stack);
-    NonNullList<NonNullList<ItemStack>> required(ItemStack stack);
-    boolean isIncompatible(ItemStack stack, ItemStack comparison);
-    boolean isEssential(ItemStack stack);
-    List<String> getInfo(ItemStack stack);
-    int getCapacity(ItemStack wareStack);
+    BodyRegion getBodyRegion();
+    NonNullList<ItemStack> requiredCyberwares();
+    boolean isIncompatible(ItemStack comparison);
+    boolean isEssential();
+    List<String> getInfo();
+    int getEnergyCapacity();
 
-    /**
-     * Returns a Quality object representing the quality of this stack - all
-     * changes that this Quality has to function must be handled internally,
-     * this is just for the tooltip and external factors. See CyberwareAPI for
-     * the base Qualities.
-     *
-     * @param stack	The ItemStack to check
-     * @return		An instance of Quality
-     */
-    Quality getQuality(ItemStack stack);
-    ItemStack setQuality(ItemStack stack, Quality quality);
-    boolean canHoldQuality(ItemStack stack, Quality quality);
+    boolean canHoldQuality(Quality quality);
 
     class Quality {
         private static Map<String, Quality> mapping = new HashMap<>();
@@ -79,6 +68,14 @@ public interface ICyberware {
         {
             return spriteSuffix;
         }
+
+        public static final Codec<Quality> CODEC = RecordCodecBuilder.create(
+            instance -> instance.group(
+                    Codec.STRING.fieldOf("unlocalized_name").forGetter(d -> d.unlocalizedName),
+                    Codec.STRING.fieldOf("name_modifier").forGetter(d -> d.nameModifier),
+                    Codec.STRING.fieldOf("sprite_suffix").forGetter(d -> d.spriteSuffix)
+            ).apply(instance, Quality::new)
+        );
     }
 
     enum BodyRegion implements StringRepresentable {

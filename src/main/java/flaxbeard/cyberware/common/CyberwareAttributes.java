@@ -8,16 +8,16 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 public class CyberwareAttributes {
-    public static final DeferredRegister<Attribute> ATTRIBUTES =
+    public static final DeferredRegister<Attribute> REGISTER =
             DeferredRegister.create(Registries.ATTRIBUTE, Cyberware.MOD_ID);
 
     /**
      * Maximum Tolerance, per-player
      */
-    public static final DeferredHolder<Attribute, Attribute> TOLERANCE = ATTRIBUTES.register("tolerance",
+    public static final DeferredHolder<Attribute, Attribute> TOLERANCE = REGISTER.register("tolerance",
             () -> new RangedAttribute(
                     "cyberware.tolerance",
-                    CyberwareConfig.ESSENCE.get(),
+                    CyberwareConfig.essence,
                     0.0,
                     Double.MAX_VALUE
             ).setSyncable(true)

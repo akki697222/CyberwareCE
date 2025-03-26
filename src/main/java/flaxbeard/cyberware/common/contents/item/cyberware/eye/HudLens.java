@@ -1,0 +1,29 @@
+package flaxbeard.cyberware.common.contents.item.cyberware.eye;
+
+import flaxbeard.cyberware.common.CyberwareItems;
+import flaxbeard.cyberware.common.contents.item.cyberware.EyeCyberware;
+import net.minecraft.core.NonNullList;
+import net.minecraft.world.item.ItemStack;
+
+import java.util.List;
+
+public class HudLens extends EyeCyberware {
+    public HudLens() {
+        super(new Properties());
+    }
+
+    @Override
+    public List<String> getInfo() {
+        return List.of();
+    }
+
+    @Override
+    public int getEssenceCost(ItemStack stack) {
+        return 1;
+    }
+
+    @Override
+    public EnumCategory getCategory(ItemStack stack) {
+        return EnumCategory.EYES;
+    }
+}
