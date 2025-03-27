@@ -40,6 +40,26 @@ public class Cyberware {
         CyberwareBlockEntities.REGISTER.register(modEventBus);
         CyberwareMenuTypes.REGISTER.register(modEventBus);
         CyberwareAttachments.REGISTER.register(modEventBus);
+        CyberwareCreativeTabs.REGISTER.register(modEventBus);
+    }
+
+    @EventBusSubscriber(modid = MOD_ID, bus = EventBusSubscriber.Bus.GAME)
+    private static final class GameListener {
+        @SubscribeEvent
+        public static void onPlayerLoggedOut(PlayerEvent.PlayerLoggedOutEvent event) {
+            Player player = event.getEntity();
+            ICyberwareUserData data = player.getData(CyberwareAttachments.CYBERWARE_USER_DATA);
+
+            logger.debug(data.getInstalledCyberware(ICyberware.BodyRegion.EYES).toString());
+        }
+
+        @SubscribeEvent
+        public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
+            Player player = event.getEntity();
+            ICyberwareUserData data = player.getData(CyberwareAttachments.CYBERWARE_USER_DATA);
+
+            logger.debug(data.getInstalledCyberware(ICyberware.BodyRegion.EYES).toString());
+        }
     }
 
     @EventBusSubscriber(modid = MOD_ID, bus = EventBusSubscriber.Bus.MOD)

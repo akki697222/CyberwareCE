@@ -29,13 +29,13 @@ import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.common.util.INBTSerializable;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.UnknownNullability;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
 import java.util.*;
 
 public class CyberwareUserData implements ICyberwareUserData, INBTSerializable<CompoundTag> {
-    private EnumMap<BodyRegion, NonNullList<ItemStack>> cyberwaresBySlot;
+    private Map<BodyRegion, NonNullList<ItemStack>> cyberwaresBySlot;
     private boolean[] missingEssentials;
     private int powerStored;
     private int powerProduction;
@@ -59,7 +59,7 @@ public class CyberwareUserData implements ICyberwareUserData, INBTSerializable<C
     private boolean isImmune;
 
     public CyberwareUserData() {
-        this.cyberwaresBySlot = new EnumMap<>(BodyRegion.class);
+        this.cyberwaresBySlot = new HashMap<>();
         for (BodyRegion slot : BodyRegion.values()) {
             NonNullList<ItemStack> nnl = NonNullList.withSize(CyberwareConstants.WARE_PER_SLOT, ItemStack.EMPTY);
             cyberwaresBySlot.put(slot, nnl);
@@ -572,7 +572,7 @@ public class CyberwareUserData implements ICyberwareUserData, INBTSerializable<C
     }
 
     public void sync(CyberwareUserData other) {
-        this.cyberwaresBySlot = other.cyberwaresBySlot.clone();
+        this.cyberwaresBySlot = new HashMap<>(other.cyberwaresBySlot);
         this.missingEssentials = other.missingEssentials.clone();
         this.powerStored = other.powerStored;
         this.powerProduction = other.powerProduction;
@@ -597,14 +597,14 @@ public class CyberwareUserData implements ICyberwareUserData, INBTSerializable<C
     }
 
     @Override
-    public CompoundTag serializeNBT(HolderLookup.@NotNull Provider provider) {
+    public CompoundTag serializeNBT(HolderLookup.@Nullable Provider provider) {
         return (CompoundTag) CODEC.encodeStart(NbtOps.INSTANCE, this)
                 .result()
                 .orElse(new CompoundTag());
     }
 
     @Override
-    public void deserializeNBT(HolderLookup.@NotNull Provider provider, @NotNull CompoundTag tag) {
+    public void deserializeNBT(HolderLookup.@Nullable Provider provider, @NotNull CompoundTag tag) {
         sync(CODEC.parse(NbtOps.INSTANCE, tag)
                 .result()
                 .orElse(new CyberwareUserData()));
@@ -645,10 +645,12 @@ public class CyberwareUserData implements ICyberwareUserData, INBTSerializable<C
         ).apply(instance, PowerData::new));
     }
 
+
+
     public static final Codec<CyberwareUserData> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Codec.simpleMap(
                     BodyRegion.CODEC,
-                    NonNullList.codecOf(ItemStack.CODEC),
+                    NonNullList.codecOf(ItemStack.OPTIONAL_CODEC),
                     Keyable.forStrings(() -> Arrays.stream(BodyRegion.values()).map(Enum::name))
             ).fieldOf("cyberwares_by_slot").forGetter(cyberwareUserData -> cyberwareUserData.cyberwaresBySlot),
             Codec.BOOL.listOf().xmap(
@@ -710,7 +712,7 @@ public class CyberwareUserData implements ICyberwareUserData, INBTSerializable<C
             Integer hudColor,
             float[] hudColorFloat,
             Boolean isImmune) {
-        this.cyberwaresBySlot = (EnumMap<BodyRegion, NonNullList<ItemStack>>) cyberwaresBySlot;
+        this.cyberwaresBySlot = new HashMap<>(cyberwaresBySlot);
         this.missingEssentials = missingEssentials;
         this.powerStored = powerData.powerStored;
         this.powerProduction = powerData.powerProduction;
@@ -720,13 +722,13 @@ public class CyberwareUserData implements ICyberwareUserData, INBTSerializable<C
         this.powerCapacity = powerData.powerCapacity;
         this.powerBuffer = powerData.powerBuffer;
         this.powerLastBuffer = powerData.powerLastBuffer;
-        this.powerOutages = (NonNullList<ItemStack>) powerOutages;
-        this.ticksPowerOutages = ticksPowerOutages;
+        this.powerOutages = NonNullList.copyOf(powerOutages);
+        this.ticksPowerOutages = new ArrayList<>(ticksPowerOutages);
         this.missingEssence = missingEssence;
-        this.specialBatteries = (NonNullList<ItemStack>) specialBatteries;
-        this.activeItems = (NonNullList<ItemStack>) activeItems;
-        this.hudjackItems = (NonNullList<ItemStack>) hudjackItems;
-        this.hotkeys = hotkeys;
+        this.specialBatteries = NonNullList.copyOf(specialBatteries);
+        this.activeItems = NonNullList.copyOf(activeItems);
+        this.hudjackItems = NonNullList.copyOf(hudjackItems);
+        this.hotkeys = new HashMap<>(hotkeys);
         this.hudData = hudData;
         this.hasOpenedRadialMenu = hasOpenedRadialMenu;
         this.hudColor = hudColor;

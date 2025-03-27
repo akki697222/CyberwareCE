@@ -56,11 +56,15 @@ public class CyberwareItems {
     public static final DeferredHolder<Item, Bodyparts> RIGHT_LEG = registerBodyparts("leg_right", BodyRegion.LEG, EnumCategory.BODYPARTS);
 
     public static DeferredHolder<Item, CyberwareComponent> registerComponent(String name) {
-        return REGISTER.register("component_" + name, CyberwareComponent::new);
+        DeferredHolder<Item, CyberwareComponent> i = REGISTER.register("component_" + name, CyberwareComponent::new);
+        itemList.add(i);
+        return i;
     }
 
     public static DeferredHolder<Item, Bodyparts> registerBodyparts(String name, BodyRegion bodyRegion, EnumCategory category) {
-        return REGISTER.register("bodypart_" + name, () -> new Bodyparts(bodyRegion, category));
+        DeferredHolder<Item, Bodyparts> i = REGISTER.register("bodypart_" + name, () -> new Bodyparts(bodyRegion, category));
+        itemList.add(i);
+        return i;
     }
 
     public static <T extends Item> DeferredHolder<Item, T> registerItem(String name, Supplier<T> item) {

@@ -2,6 +2,7 @@ package flaxbeard.cyberware.common.network;
 
 import flaxbeard.cyberware.api.CyberwareAPI;
 import flaxbeard.cyberware.api.CyberwareUserData;
+import flaxbeard.cyberware.client.CyberwareClient;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -39,6 +40,7 @@ public record CyberwareSyncPacket(int entityId, CompoundTag data) implements Cus
                             .result()
                             .orElse(new CyberwareUserData());
                     CyberwareAPI.setCyberwareUserData(livingEntity, userData);
+                    CyberwareClient.logger.info("Data Updated!");
                 }
             }
         });

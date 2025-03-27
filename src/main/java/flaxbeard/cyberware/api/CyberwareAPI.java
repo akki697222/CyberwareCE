@@ -5,37 +5,26 @@ import flaxbeard.cyberware.api.item.CyberwareData;
 import flaxbeard.cyberware.api.item.ICyberware;
 import flaxbeard.cyberware.common.CyberwareAttachments;
 import flaxbeard.cyberware.common.CyberwareComponents;
+import flaxbeard.cyberware.common.network.CyberwareSyncPacket;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import flaxbeard.cyberware.api.item.ICyberware.Quality;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 public class CyberwareAPI {
-    /**
-     * Store any functional data of your Cyberware in NBT under this tag, which will be cleared when new items are added or removed
-     * to ensure stacking and such works
-     */
-    public static final String DATA_TAG = "cyberwareFunctionData";
-
-    public static final String QUALITY_TAG = "cyberwareQuality";
-
-    /**
-     * Quality for Cyberware scavenged from mobs
-     */
-    public static final Quality QUALITY_SCAVENGED = new Quality("cyberware.quality.scavenged", "cyberware.quality.scavenged.name_modifier", "scavenged");
-
-    /**
-     * Quality for Cyberware built at the Engineering Table
-     */
-    public static final Quality QUALITY_MANUFACTURED = new Quality("cyberware.quality.manufactured");
-
     private static final CyberwareData DEFAULT_DATA = new CyberwareData();
 
     public static Map<ItemStack, ICyberware> linkedWare = new HashMap<>();
@@ -107,9 +96,36 @@ public class CyberwareAPI {
         return entity.getData(CyberwareAttachments.CYBERWARE_USER_DATA);
     }
 
-    public static void updateData(Entity target) {
-        if (checkServer(target.level())) {
-            //@TODO this
+    public static void updateData(Entity targetEntity) {
+        if (checkServer(targetEntity.level())) {
+            ServerLevel world = (ServerLevel) targetEntity.level();
+
+            CyberwareUserData cyberwareUserData = (CyberwareUserData) getCyberwareUserData(targetEntity);
+
+            if (targetEntity instanceof LivingEntity livingEntity) {
+                setCyberwareUserData(livingEntity, cyberwareUserData);
+                Cyberware.logger.debug("Updated server-side CyberwareUserData for {}", targetEntity.getName().getString());
+            }
+
+            CompoundTag tagCompound = cyberwareUserData.serializeNBT(null);
+
+            if (targetEntity instanceof ServerPlayer targetPlayer) {
+                PacketDistributor.sendToPlayer(targetPlayer, new CyberwareSyncPacket(targetEntity.getId(), tagCompound));
+                Cyberware.logger.info("Sent data for player {} to that player's client", targetPlayer.getName().getString());
+            }
+
+            List<ServerPlayer> trackingPlayers = world.getPlayers(player ->
+                    player != targetEntity &&
+                            player.distanceToSqr(targetEntity) < 128 * 128
+            );
+
+            for (ServerPlayer trackingPlayer : trackingPlayers) {
+                PacketDistributor.sendToPlayer(trackingPlayer, new CyberwareSyncPacket(targetEntity.getId(), tagCompound));
+                if (targetEntity instanceof ServerPlayer) {
+                    Cyberware.logger.info("Sent data for player {} to player {}",
+                            targetEntity.getName().getString(), trackingPlayer.getName().getString());
+                }
+            }
         }
     }
 
