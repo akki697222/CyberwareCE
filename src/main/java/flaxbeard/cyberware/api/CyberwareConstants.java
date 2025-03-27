@@ -2,6 +2,7 @@ package flaxbeard.cyberware.api;
 
 public class CyberwareConstants {
     public static final int WARE_PER_SLOT = 10;
+    public static final int WARE_SLOT_NUM = WARE_PER_SLOT * 12;
     public static final int CYBEREYES_CONSUMPTION = 1;
     public static final int COUPLER_PRODUCTION = 5;
     public static final int METABOLIC_PRODUCTION = 25;

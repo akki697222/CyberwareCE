@@ -15,21 +15,28 @@ import flaxbeard.cyberware.api.util.NonNullListUtil;
 import flaxbeard.cyberware.common.CyberwareAttributes;
 import flaxbeard.cyberware.common.CyberwareComponents;
 import flaxbeard.cyberware.common.CyberwareConfig;
+import flaxbeard.cyberware.common.CyberwareItems;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.common.util.INBTSerializable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.UnknownNullability;
 
 import javax.annotation.Nonnull;
 import java.util.*;
 
-public class CyberwareUserData implements ICyberwareUserData {
-    private final EnumMap<BodyRegion, NonNullList<ItemStack>> cyberwaresBySlot;
-    private final boolean[] missingEssentials;
+public class CyberwareUserData implements ICyberwareUserData, INBTSerializable<CompoundTag> {
+    private EnumMap<BodyRegion, NonNullList<ItemStack>> cyberwaresBySlot;
+    private boolean[] missingEssentials;
     private int powerStored;
     private int powerProduction;
     private int powerLastProduction;
@@ -78,7 +85,7 @@ public class CyberwareUserData implements ICyberwareUserData {
         this.hudColor = 0x00FFFF;
         this.hudColorFloat = new float[]{0.0F, 1.0F, 1.0F};
         this.isImmune = false;
-        resetWare(null);
+        //resetWare(null);
     }
 
     @Override
@@ -89,7 +96,7 @@ public class CyberwareUserData implements ICyberwareUserData {
     @Override
     public void setInstalledCyberware(LivingEntity livingEntity, BodyRegion slot, List<ItemStack> cyberwaresToInstall) {
         while (cyberwaresToInstall.size() > CyberwareConstants.WARE_PER_SLOT) {
-            cyberwaresToInstall.remove(cyberwaresToInstall.size() - 1);
+            cyberwaresToInstall.removeLast();
         }
         while (cyberwaresToInstall.size() < CyberwareConstants.WARE_PER_SLOT) {
             cyberwaresToInstall.add(ItemStack.EMPTY);
@@ -115,7 +122,7 @@ public class CyberwareUserData implements ICyberwareUserData {
                     }
                 }
                 if (!found) {
-                    CyberwareAPI.getCyberware(itemStackInstalled).onRemoved(livingEntity, itemStackInstalled);
+                    CyberwareAPI.getCyberware(itemStackInstalled).onRemoved(livingEntity);
                 }
             }
             for (ItemStack itemStackToInstall : cyberwaresToInstall) {
@@ -129,7 +136,7 @@ public class CyberwareUserData implements ICyberwareUserData {
                     }
                 }
                 if (!found) {
-                    CyberwareAPI.getCyberware(itemStackToInstall).onAdded(livingEntity, itemStackToInstall);
+                    CyberwareAPI.getCyberware(itemStackToInstall).onAdded(livingEntity);
                 }
             }
         }
@@ -400,20 +407,33 @@ public class CyberwareUserData implements ICyberwareUserData {
         for (NonNullList<ItemStack> nnlCyberwaresInSlot : cyberwaresBySlot.values()) {
             for (ItemStack item : nnlCyberwaresInSlot) {
                 if (CyberwareAPI.isCyberware(item)) {
-                    CyberwareAPI.getCyberware(item).onRemoved(livingEntity, item);
+                    CyberwareAPI.getCyberware(item).onRemoved(livingEntity);
                 }
             }
         }
         missingEssence = 0;
         for (BodyRegion slot : BodyRegion.values()) {
-            NonNullList<ItemStack> nnlCyberwaresInSlot = NonNullList.create();
-            /*
-            NonNullList<ItemStack> startItems = CyberwareConfig.getStartingItems(slot);
-            for (ItemStack startItem : startItems) {
-                nnlCyberwaresInSlot.add(startItem.copy());
+            NonNullList<ItemStack> stacks = NonNullList.create();
+            switch (slot) {
+                case EYES -> stacks.add(new ItemStack(CyberwareItems.EYES));
+                case CRANIUM -> stacks.add(new ItemStack(CyberwareItems.BRAIN));
+                case HEART -> stacks.add(new ItemStack(CyberwareItems.HEART));
+                case LUNGS -> stacks.add(new ItemStack(CyberwareItems.LUNGS));
+                case LOWER_ORGANS -> stacks.add(new ItemStack(CyberwareItems.STOMACH));
+                case SKIN -> stacks.add(new ItemStack(CyberwareItems.SKIN));
+                case MUSCLE -> stacks.add(new ItemStack(CyberwareItems.MUSCLE));
+                case BONE -> stacks.add(new ItemStack(CyberwareItems.BONE));
+                case ARM -> {
+                    stacks.add(new ItemStack(CyberwareItems.LEFT_ARM));
+                    stacks.add(new ItemStack(CyberwareItems.RIGHT_ARM));
+                }
+                case LEG -> {
+                    stacks.add(new ItemStack(CyberwareItems.LEFT_LEG));
+                    stacks.add(new ItemStack(CyberwareItems.RIGHT_LEG));
+                }
+                default -> stacks = NonNullList.withSize(CyberwareConstants.WARE_PER_SLOT, ItemStack.EMPTY);
             }
-             */
-            cyberwaresBySlot.put(slot, nnlCyberwaresInSlot);
+            cyberwaresBySlot.put(slot, stacks);
         }
         Arrays.fill(missingEssentials, false);
         updateCapacity();
@@ -551,6 +571,45 @@ public class CyberwareUserData implements ICyberwareUserData {
         powerStored = Math.min(powerCapacity, powerStored + computeSum(map));
     }
 
+    public void sync(CyberwareUserData other) {
+        this.cyberwaresBySlot = other.cyberwaresBySlot.clone();
+        this.missingEssentials = other.missingEssentials.clone();
+        this.powerStored = other.powerStored;
+        this.powerProduction = other.powerProduction;
+        this.powerLastProduction = other.powerLastProduction;
+        this.powerConsumption = other.powerConsumption;
+        this.powerLastConsumption = other.powerLastConsumption;
+        this.powerCapacity = other.powerCapacity;
+        this.powerBuffer = new HashMap<>(other.powerBuffer);
+        this.powerLastBuffer = new HashMap<>(other.powerLastBuffer);
+        this.powerOutages = NonNullList.copyOf(other.powerOutages);
+        this.ticksPowerOutages = new ArrayList<>(other.ticksPowerOutages);
+        this.missingEssence = other.missingEssence;
+        this.specialBatteries = NonNullList.copyOf(other.specialBatteries);;
+        this.activeItems = NonNullList.copyOf(other.activeItems);;
+        this.hudjackItems = NonNullList.copyOf(other.hudjackItems);
+        this.hotkeys = new HashMap<>(other.hotkeys);
+        this.hudData = other.hudData.cloneToNewInstance();
+        this.hasOpenedRadialMenu = other.hasOpenedRadialMenu;
+        this.hudColor = other.hudColor;
+        this.hudColorFloat = other.hudColorFloat.clone();
+        this.isImmune = other.isImmune;
+    }
+
+    @Override
+    public CompoundTag serializeNBT(HolderLookup.@NotNull Provider provider) {
+        return (CompoundTag) CODEC.encodeStart(NbtOps.INSTANCE, this)
+                .result()
+                .orElse(new CompoundTag());
+    }
+
+    @Override
+    public void deserializeNBT(HolderLookup.@NotNull Provider provider, @NotNull CompoundTag tag) {
+        sync(CODEC.parse(NbtOps.INSTANCE, tag)
+                .result()
+                .orElse(new CyberwareUserData()));
+    }
+
     public static class PowerData {
         private final int powerStored;
         private final int powerProduction;
@@ -602,8 +661,8 @@ public class CyberwareUserData implements ICyberwareUserData {
                     },
                     array -> {
                         List<Boolean> booleans = new ArrayList<>();
-                        for (int i = 0; i < array.length; i++) {
-                            booleans.add(array[i]);
+                        for (boolean b : array) {
+                            booleans.add(b);
                         }
                         return booleans;
                     }

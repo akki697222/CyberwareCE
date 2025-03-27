@@ -4,10 +4,11 @@ import com.llamalad7.mixinextras.sugar.Cancellable;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.bus.api.ICancellableEvent;
 import net.neoforged.neoforge.event.entity.EntityEvent;
 import net.neoforged.neoforge.items.ItemStackHandler;
 
-public class CyberwareSurgeryEvent extends EntityEvent {
+public class CyberwareSurgeryEvent extends EntityEvent implements ICancellableEvent {
     public CyberwareSurgeryEvent(LivingEntity livingEntity) {
         super(livingEntity);
     }

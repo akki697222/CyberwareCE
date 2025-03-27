@@ -22,12 +22,12 @@ public class Cybereye extends EyeCyberware {
     }
 
     @Override
-    public int getEssenceCost(ItemStack stack) {
+    public int getEssenceCost() {
         return 0;
     }
 
     @Override
-    public EnumCategory getCategory(ItemStack stack) {
+    public EnumCategory getCategory() {
         return EnumCategory.EYES;
     }
 }

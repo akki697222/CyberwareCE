@@ -19,6 +19,11 @@ public abstract class CyberwareItem extends AbstractCyberwareItem implements ICy
     }
 
     @Override
+    public int getMaxInstalls() {
+        return 1;
+    }
+
+    @Override
     public BodyRegion getBodyRegion() {
         return bodyRegion;
     }
@@ -52,20 +57,28 @@ public abstract class CyberwareItem extends AbstractCyberwareItem implements ICy
     }
 
     @Override
-    public void onAdded(LivingEntity livingEntity, ItemStack stack) {
+    public void onAdded(LivingEntity livingEntity) {
 
     }
 
     @Override
-    public void onRemoved(LivingEntity livingEntity, ItemStack stack) {
+    public void onRemoved(LivingEntity livingEntity) {
 
     }
 
-    @Override
-    public abstract int getEssenceCost(ItemStack stack);
+    public int getEnergyConsumption() {
+        return 0;
+    }
+
+    public int getEnergyProduction() {
+        return 0;
+    }
 
     @Override
-    public abstract EnumCategory getCategory(ItemStack stack);
+    public abstract int getEssenceCost();
+
+    @Override
+    public abstract EnumCategory getCategory();
 
     public NonNullList<NonNullList<ItemStack>> getCraftComponents() {
         return craftComponents;

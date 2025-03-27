@@ -1,13 +1,21 @@
 package flaxbeard.cyberware.api;
 
+import flaxbeard.cyberware.Cyberware;
 import flaxbeard.cyberware.api.hud.HudData;
+
 import net.minecraft.core.NonNullList;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import flaxbeard.cyberware.api.item.ICyberware.BodyRegion;
 import flaxbeard.cyberware.api.item.ICyberware.ISidedLimb.Side;
+import net.neoforged.neoforge.capabilities.ICapabilityProvider;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.List;
 
 public interface ICyberwareUserData {
@@ -62,4 +70,22 @@ public interface ICyberwareUserData {
     void setEssence(int essence);
     @Deprecated
     int getMaxEssence();
+
+    class Provider implements ICapabilityProvider<Entity, Void, ICyberwareUserData> {
+        @Nullable
+        @Override
+        public ICyberwareUserData getCapability(@Nonnull Entity entity, Void context) {
+            if (!(entity instanceof Player player)) {
+                return null;
+            }
+            CyberwareUserData data = new CyberwareUserData();
+            CompoundTag tag = player.getPersistentData().getCompound("CyberwareData");
+            if (!tag.isEmpty()) {
+                CyberwareUserData.CODEC.parse(NbtOps.INSTANCE, tag)
+                        .result().ifPresent(data::sync);
+                Cyberware.logger.debug("Loaded CyberwareData for player {}: {}", player.getName().getString(), tag);
+            }
+            return data;
+        }
+    }
 }

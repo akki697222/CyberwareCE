@@ -1,0 +1,7 @@
+{
+  "parent": "block/cube_column",
+  "textures": {
+    "end": "cyberware:block/blank_machine",
+    "side": "cyberware:block/surgery_side"
+  }
+}

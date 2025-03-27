@@ -1,0 +1,8 @@
+// 1.21.1	2025-03-26T20:02:59.9710194	Cyberware Damage Types
+8893192547b0d27f03259e8bbd72388f8302430a data/cyberware/damage_type/brainless.json
+ccd70cadb324e8ae03e5ee24cd358e7ea0247d3a data/cyberware/damage_type/heartless.json
+c84f9adc0a7b085ffeadc4339b0003f8a2ffe621 data/cyberware/damage_type/lowessence.json
+a0dcdbe1a00db3d3e067f4d0a9d7972cf45fd1da data/cyberware/damage_type/noessence.json
+ef33cbcf0bfe6d3527f281ceddff635a9fca762f data/cyberware/damage_type/nomuscles.json
+dac0e8010e2d6d0d77848c1c22c1fbbbd46a49db data/cyberware/damage_type/spineless.json
+009caa12e6cdcebf24da2d82a35e07ead980a21c data/cyberware/damage_type/surgery.json

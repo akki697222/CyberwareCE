@@ -18,12 +18,12 @@ public class HudLens extends EyeCyberware {
     }
 
     @Override
-    public int getEssenceCost(ItemStack stack) {
+    public int getEssenceCost() {
         return 1;
     }
 
     @Override
-    public EnumCategory getCategory(ItemStack stack) {
+    public EnumCategory getCategory() {
         return EnumCategory.EYES;
     }
 }

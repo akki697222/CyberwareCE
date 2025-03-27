@@ -22,6 +22,7 @@ public interface ICyberware {
     boolean isEssential();
     List<String> getInfo();
     int getEnergyCapacity();
+    int getMaxInstalls();
 
     boolean canHoldQuality(Quality quality);
 
@@ -79,18 +80,18 @@ public interface ICyberware {
     }
 
     enum BodyRegion implements StringRepresentable {
-        EYES(12, "eyes"),
-        CRANIUM(11, "cranium"),
-        HEART(14, "heart"),
-        LUNGS(15, "lungs"),
-        LOWER_ORGANS(17, "lower_organs"),
-        SKIN(18, "skin"),
-        MUSCLE(19, "muscle"),
-        BONE(20, "bone"),
-        ARM(21, "arm", true, true),
-        HAND(22, "hand", true, false),
-        LEG(23, "leg", true, true),
-        FOOT(24, "foot", true, false);
+        EYES(0, "eyes"),
+        CRANIUM(1, "cranium"),
+        HEART(2, "heart"),
+        LUNGS(3, "lungs"),
+        LOWER_ORGANS(4, "lower_organs"),
+        SKIN(5, "skin"),
+        MUSCLE(6, "muscle"),
+        BONE(7, "bone"),
+        ARM(8, "arm", true, true),
+        HAND(9, "hand", true, false),
+        LEG(10, "leg", true, true),
+        FOOT(11, "foot", true, false);
 
         private final int slotNumber;
         private final String name;
@@ -144,11 +145,11 @@ public interface ICyberware {
         }
     }
 
-    void onAdded(LivingEntity livingEntity, ItemStack stack);
-    void onRemoved(LivingEntity livingEntity, ItemStack stack);
+    void onAdded(LivingEntity livingEntity);
+    void onRemoved(LivingEntity livingEntity);
 
     interface ISidedLimb {
-        Side getSide(ItemStack stack);
+        Side getSide();
 
         enum Side {
             LEFT,
@@ -156,5 +157,5 @@ public interface ICyberware {
         }
     }
 
-    int getEssenceCost(ItemStack stack);
+    int getEssenceCost();
 }

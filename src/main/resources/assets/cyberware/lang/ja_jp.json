@@ -9,5 +9,13 @@
   "item.cyberware.component_synthnerves": "合成神経",
   "item.cyberware.component_storage": "ストレージセル",
   "item.cyberware.component_microelectric": "微小電気セル",
-  "item.cyberware.hud_lens": "HUDレンズ"
+  "item.cyberware.hud_lens": "HUDレンズ",
+  "block.cyberware.surgery": "ロボ外科医",
+  "death.attack.cyberware.brainless": "もしも%1$sが脳無しじゃなかったら・・・",
+  "death.attack.cyberware.heartless": "%1$sは心無いが故に死にました。",
+  "death.attack.cyberware.surgery": "%1$sはオペから生還しませんでした。",
+  "death.attack.cyberware.spineless": "%1$sは「骨」のない軟弱者でした。",
+  "death.attack.cyberware.nomuscles": "%1$sはバラバラになった。",
+  "death.attack.cyberware.noessence": "%1$sの体が拒絶しました。",
+  "death.attack.cyberware.lowessence": "%1$sの体が拒絶しました。"
 }

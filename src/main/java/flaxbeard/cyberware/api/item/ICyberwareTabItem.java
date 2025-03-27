@@ -22,5 +22,5 @@ public interface ICyberwareTabItem
         FOOT;
     }
 
-    EnumCategory getCategory(ItemStack stack);
+    EnumCategory getCategory();
 }

@@ -1,6 +1,7 @@
 package flaxbeard.cyberware.common;
 
 import flaxbeard.cyberware.Cyberware;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.RangedAttribute;
@@ -14,12 +15,10 @@ public class CyberwareAttributes {
     /**
      * Maximum Tolerance, per-player
      */
-    public static final DeferredHolder<Attribute, Attribute> TOLERANCE = REGISTER.register("tolerance",
-            () -> new RangedAttribute(
-                    "cyberware.tolerance",
-                    CyberwareConfig.essence,
-                    0.0,
-                    Double.MAX_VALUE
-            ).setSyncable(true)
-    );
+    public static final Holder<Attribute> TOLERANCE = REGISTER.register("tolerance", () -> new RangedAttribute(
+            "cyberware.tolerance",
+            CyberwareConfig.essence,
+            0.0,
+            Double.MAX_VALUE
+    ).setSyncable(true));
 }

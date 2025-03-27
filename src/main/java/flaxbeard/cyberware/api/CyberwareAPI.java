@@ -3,14 +3,14 @@ package flaxbeard.cyberware.api;
 import flaxbeard.cyberware.Cyberware;
 import flaxbeard.cyberware.api.item.CyberwareData;
 import flaxbeard.cyberware.api.item.ICyberware;
+import flaxbeard.cyberware.common.CyberwareAttachments;
 import flaxbeard.cyberware.common.CyberwareComponents;
-import flaxbeard.cyberware.common.CyberwareConfig;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import flaxbeard.cyberware.api.item.ICyberware.Quality;
-import net.minecraft.world.entity.ai.attributes.Attribute;
-import net.minecraft.world.entity.ai.attributes.RangedAttribute;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -99,5 +99,25 @@ public class CyberwareAPI {
 
     public static ResourceLocation modResource(String path) {
         return ResourceLocation.fromNamespaceAndPath(Cyberware.MOD_ID, path);
+    }
+
+    @Nullable
+    public static ICyberwareUserData getCyberwareUserData(@Nullable Entity entity) {
+        if (entity == null) return null;
+        return entity.getData(CyberwareAttachments.CYBERWARE_USER_DATA);
+    }
+
+    public static void updateData(Entity target) {
+        if (checkServer(target.level())) {
+            //@TODO this
+        }
+    }
+
+    public static boolean checkServer(Level level) {
+        return level == null || !level.isClientSide();
+    }
+
+    public static void setCyberwareUserData(LivingEntity entity, CyberwareUserData data) {
+        entity.setData(CyberwareAttachments.CYBERWARE_USER_DATA, data);
     }
 }

@@ -121,7 +121,7 @@ public class CyberwareConfig {
         BUILDER.push("Defaults");
         DEFAULT_STARTING_ITEMS = BUILDER
                 .comment("Default augments for slots (format: 'id amount metadata')")
-                .defineList("defaultStartingItems", Arrays.asList("cyberware:body_part 1 0"), s -> s instanceof String);
+                .defineList("defaultStartingItems", Arrays.asList("cyberware:bodypart_eyes"), s -> s instanceof String);
         BUILDER.pop();
     }
 

@@ -75,4 +75,8 @@ public class HudData implements IHudSaveData {
         this.floats = new HashMap<>(floats);
         this.integers = new HashMap<>(integers);
     }
+
+    public HudData cloneToNewInstance() {
+        return new HudData(strings, booleans, floats, integers);
+    }
 }
