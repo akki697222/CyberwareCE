@@ -5,7 +5,6 @@ import com.mojang.serialization.Keyable;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import flaxbeard.cyberware.Cyberware;
 import flaxbeard.cyberware.api.hud.HudData;
-import flaxbeard.cyberware.api.item.CyberwareData;
 import flaxbeard.cyberware.api.item.ICyberware;
 import flaxbeard.cyberware.api.item.ICyberware.*;
 import flaxbeard.cyberware.api.item.ICyberware.ISidedLimb.Side;
@@ -13,9 +12,9 @@ import flaxbeard.cyberware.api.item.IHudjack;
 import flaxbeard.cyberware.api.item.IMenuItem;
 import flaxbeard.cyberware.api.util.NonNullListUtil;
 import flaxbeard.cyberware.common.CyberwareAttributes;
-import flaxbeard.cyberware.common.CyberwareComponents;
 import flaxbeard.cyberware.common.CyberwareConfig;
 import flaxbeard.cyberware.common.CyberwareItems;
+import flaxbeard.cyberware.common.contents.item.CyberwareItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
@@ -57,6 +56,7 @@ public class CyberwareUserData implements ICyberwareUserData, INBTSerializable<C
     private int hudColor;
     private float[] hudColorFloat;
     private boolean isImmune;
+    private boolean isBlind;
 
     public CyberwareUserData() {
         this.cyberwaresBySlot = new HashMap<>();
@@ -85,7 +85,7 @@ public class CyberwareUserData implements ICyberwareUserData, INBTSerializable<C
         this.hudColor = 0x00FFFF;
         this.hudColorFloat = new float[]{0.0F, 1.0F, 1.0F};
         this.isImmune = false;
-        //resetWare(null);
+        resetWare(null);
     }
 
     @Override
@@ -157,7 +157,17 @@ public class CyberwareUserData implements ICyberwareUserData, INBTSerializable<C
     @Override
     public ItemStack getCyberware(ItemStack cyberware) {
         for (ItemStack itemStack : getInstalledCyberware(CyberwareAPI.getCyberware(cyberware).getBodyRegion())) {
-            if (!itemStack.isEmpty() && ItemStack.isSameItemSameComponents(itemStack, cyberware)) {
+            if (!itemStack.isEmpty() && ItemStack.isSameItem(itemStack, cyberware)) {
+                return itemStack;
+            }
+        }
+        return ItemStack.EMPTY;
+    }
+
+    @Override
+    public ItemStack getCyberware(Class<? extends CyberwareItem> clazz, BodyRegion bodyRegion) {
+        for (ItemStack itemStack : getInstalledCyberware(bodyRegion)) {
+            if (!itemStack.isEmpty() && clazz.isInstance(itemStack.getItem())) {
                 return itemStack;
             }
         }
@@ -177,11 +187,7 @@ public class CyberwareUserData implements ICyberwareUserData, INBTSerializable<C
                     ICyberware cyberware = CyberwareAPI.getCyberware(itemStackCyberware);
                     if (cyberware instanceof IMenuItem && ((IMenuItem) cyberware).hasMenu(itemStackCyberware)) {
                         activeItems.add(itemStackCyberware);
-                        CyberwareData data = itemStackCyberware.get(CyberwareComponents.CYBERWARE_DATA);
-                        int hotkey = -1;
-                        if (data != null) {
-                            hotkey = data.getHotkey();
-                        }
+                        int hotkey = cyberware.getHotKey();
                         if (hotkey != -1) {
                             hotkeys.put(hotkey, itemStackCyberware);
                         }
@@ -211,6 +217,16 @@ public class CyberwareUserData implements ICyberwareUserData, INBTSerializable<C
         powerLastProduction = powerProduction;
         powerProduction = 0;
         powerConsumption = 0;
+    }
+
+    @Override
+    public boolean isBlind() {
+        return isBlind;
+    }
+
+    @Override
+    public void setBlind(boolean blind) {
+        this.isBlind = blind;
     }
 
     @Override
@@ -412,26 +428,26 @@ public class CyberwareUserData implements ICyberwareUserData, INBTSerializable<C
             }
         }
         missingEssence = 0;
+        cyberwaresBySlot.clear();
         for (BodyRegion slot : BodyRegion.values()) {
-            NonNullList<ItemStack> stacks = NonNullList.create();
+            NonNullList<ItemStack> stacks = NonNullList.withSize(CyberwareConstants.WARE_PER_SLOT, ItemStack.EMPTY);
             switch (slot) {
-                case EYES -> stacks.add(new ItemStack(CyberwareItems.EYES));
-                case CRANIUM -> stacks.add(new ItemStack(CyberwareItems.BRAIN));
-                case HEART -> stacks.add(new ItemStack(CyberwareItems.HEART));
-                case LUNGS -> stacks.add(new ItemStack(CyberwareItems.LUNGS));
-                case LOWER_ORGANS -> stacks.add(new ItemStack(CyberwareItems.STOMACH));
-                case SKIN -> stacks.add(new ItemStack(CyberwareItems.SKIN));
-                case MUSCLE -> stacks.add(new ItemStack(CyberwareItems.MUSCLE));
-                case BONE -> stacks.add(new ItemStack(CyberwareItems.BONE));
+                case EYES -> stacks.set(0, new ItemStack(CyberwareItems.EYES));
+                case CRANIUM -> stacks.set(0, new ItemStack(CyberwareItems.BRAIN));
+                case HEART -> stacks.set(0, new ItemStack(CyberwareItems.HEART));
+                case LUNGS -> stacks.set(0, new ItemStack(CyberwareItems.LUNGS));
+                case LOWER_ORGANS -> stacks.set(0, new ItemStack(CyberwareItems.STOMACH));
+                case SKIN -> stacks.set(0, new ItemStack(CyberwareItems.SKIN));
+                case MUSCLE -> stacks.set(0, new ItemStack(CyberwareItems.MUSCLE));
+                case BONE -> stacks.set(0, new ItemStack(CyberwareItems.BONE));
                 case ARM -> {
-                    stacks.add(new ItemStack(CyberwareItems.LEFT_ARM));
-                    stacks.add(new ItemStack(CyberwareItems.RIGHT_ARM));
+                    stacks.set(0, new ItemStack(CyberwareItems.LEFT_ARM));
+                    stacks.set(1, new ItemStack(CyberwareItems.RIGHT_ARM));
                 }
                 case LEG -> {
-                    stacks.add(new ItemStack(CyberwareItems.LEFT_LEG));
-                    stacks.add(new ItemStack(CyberwareItems.RIGHT_LEG));
+                    stacks.set(0, new ItemStack(CyberwareItems.LEFT_LEG));
+                    stacks.set(1, new ItemStack(CyberwareItems.RIGHT_LEG));
                 }
-                default -> stacks = NonNullList.withSize(CyberwareConstants.WARE_PER_SLOT, ItemStack.EMPTY);
             }
             cyberwaresBySlot.put(slot, stacks);
         }

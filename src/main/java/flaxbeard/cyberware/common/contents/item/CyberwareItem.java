@@ -2,9 +2,17 @@ package flaxbeard.cyberware.common.contents.item;
 
 import flaxbeard.cyberware.api.item.ICyberware;
 import flaxbeard.cyberware.api.item.ICyberwareTabItem;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.NonNullList;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextColor;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.neoforge.client.event.RenderTooltipEvent;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -21,6 +29,11 @@ public abstract class CyberwareItem extends AbstractCyberwareItem implements ICy
     @Override
     public int getMaxInstalls() {
         return 1;
+    }
+
+    @Override
+    public int getHotKey() {
+        return -1;
     }
 
     @Override
@@ -44,7 +57,7 @@ public abstract class CyberwareItem extends AbstractCyberwareItem implements ICy
     }
 
     @Override
-    public abstract List<String> getInfo();
+    public abstract List<Component> getInfo();
 
     @Override
     public int getEnergyCapacity() {
@@ -86,5 +99,19 @@ public abstract class CyberwareItem extends AbstractCyberwareItem implements ICy
 
     public void setCraftComponents(NonNullList<NonNullList<ItemStack>> craftComponents) {
         this.craftComponents = craftComponents;
+    }
+
+    @Override
+    @OnlyIn(Dist.CLIENT)
+    public void appendHoverText(@NotNull ItemStack stack, @NotNull TooltipContext context, @NotNull List<Component> tooltipComponents, @NotNull TooltipFlag tooltipFlag) {
+        super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
+
+        if (!Screen.hasShiftDown()) {
+            tooltipComponents.add(Component.translatable("tooltip.cyberware.shift_prompt"));
+            return;
+        }
+
+        tooltipComponents.addAll(getInfo());
+        if (getEssenceCost() > 0) tooltipComponents.add(Component.translatable("tooltip.cyberware.essence_consumes"));
     }
 }

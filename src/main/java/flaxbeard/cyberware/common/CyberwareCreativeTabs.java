@@ -14,7 +14,7 @@ public class CyberwareCreativeTabs {
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> CYBERWARE_MAIN = REGISTER.register(Cyberware.MOD_ID, () ->
             CreativeModeTab.builder()
                     .title(Component.translatable("gui." + Cyberware.MOD_ID + ".tab"))
-                    .icon(() -> new ItemStack(CyberwareItems.WARE_HUD_LENS.get()))
+                    .icon(() -> new ItemStack(CyberwareItems.WARE_CYBER_EYES.get()))
                     .displayItems((p, o) -> {
                         CyberwareItems.itemList.forEach(i -> {
                             o.accept(i.get().getDefaultInstance());

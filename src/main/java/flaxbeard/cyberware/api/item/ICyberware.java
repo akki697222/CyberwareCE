@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.NonNullList;
+import net.minecraft.network.chat.Component;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
@@ -20,9 +21,10 @@ public interface ICyberware {
     NonNullList<ItemStack> requiredCyberwares();
     boolean isIncompatible(ItemStack comparison);
     boolean isEssential();
-    List<String> getInfo();
+    List<Component> getInfo();
     int getEnergyCapacity();
     int getMaxInstalls();
+    int getHotKey();
 
     boolean canHoldQuality(Quality quality);
 

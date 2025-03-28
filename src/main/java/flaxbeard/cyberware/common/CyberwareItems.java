@@ -6,6 +6,7 @@ import flaxbeard.cyberware.api.item.ICyberwareTabItem.EnumCategory;
 import flaxbeard.cyberware.common.contents.item.CyberwareComponent;
 import flaxbeard.cyberware.common.contents.item.CyberwareItem;
 import flaxbeard.cyberware.common.contents.item.cyberware.Bodyparts;
+import flaxbeard.cyberware.common.contents.item.cyberware.eye.Cybereye;
 import flaxbeard.cyberware.common.contents.item.cyberware.eye.HudLens;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -37,7 +38,8 @@ public class CyberwareItems {
     /*
         Eye Cyberwares
      */
-    public static final DeferredHolder<Item, HudLens> WARE_HUD_LENS  = REGISTER.register("hud_lens", HudLens::new);
+    public static final DeferredHolder<Item, HudLens> WARE_HUD_LENS  = registerItem("hud_lens", HudLens::new);
+    public static final DeferredHolder<Item, Cybereye> WARE_CYBER_EYES  = registerItem("cyber_eyes", Cybereye::new);
 
     /*
         Bodyparts

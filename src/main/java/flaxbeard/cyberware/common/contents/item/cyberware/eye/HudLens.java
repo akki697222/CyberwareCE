@@ -3,6 +3,7 @@ package flaxbeard.cyberware.common.contents.item.cyberware.eye;
 import flaxbeard.cyberware.common.CyberwareItems;
 import flaxbeard.cyberware.common.contents.item.cyberware.EyeCyberware;
 import net.minecraft.core.NonNullList;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
@@ -13,7 +14,7 @@ public class HudLens extends EyeCyberware {
     }
 
     @Override
-    public List<String> getInfo() {
+    public List<Component> getInfo() {
         return List.of();
     }
 

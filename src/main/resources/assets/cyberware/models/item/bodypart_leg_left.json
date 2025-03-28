@@ -1,6 +1,6 @@
 {
     "parent": "item/generated",
     "textures": {
-        "layer0": "cyberware:item/component_titanium"
+        "layer0": "cyberware:item/bodyparts/bodypart_leg_left"
     }
 }

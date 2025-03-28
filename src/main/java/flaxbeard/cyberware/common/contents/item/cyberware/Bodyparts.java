@@ -1,6 +1,7 @@
 package flaxbeard.cyberware.common.contents.item.cyberware;
 
 import flaxbeard.cyberware.common.contents.item.CyberwareItem;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
@@ -14,7 +15,7 @@ public class Bodyparts extends CyberwareItem {
     }
 
     @Override
-    public List<String> getInfo() {
+    public List<Component> getInfo() {
         return List.of();
     }
 

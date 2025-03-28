@@ -3,6 +3,7 @@ package flaxbeard.cyberware.api;
 import flaxbeard.cyberware.Cyberware;
 import flaxbeard.cyberware.api.hud.HudData;
 
+import flaxbeard.cyberware.common.contents.item.CyberwareItem;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
@@ -28,8 +29,11 @@ public interface ICyberwareUserData {
     boolean hasEssential(BodyRegion slot);
     void setHasEssential(BodyRegion slot, boolean hasLeft, boolean hasRight);
     ItemStack getCyberware(ItemStack cyberware);
+    ItemStack getCyberware(Class<? extends CyberwareItem> clazz, BodyRegion bodyRegion);
     void updateCapacity();
     void resetBuffer();
+    boolean isBlind();
+    void setBlind(boolean blind);
     void addPower(int amount, ItemStack inputter);
     boolean isAtCapacity(ItemStack stack);
     boolean isAtCapacity(ItemStack stack, int buffer);

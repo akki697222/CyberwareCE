@@ -1,5 +1,6 @@
 package flaxbeard.cyberware.common.network;
 
+import flaxbeard.cyberware.Cyberware;
 import flaxbeard.cyberware.api.CyberwareAPI;
 import flaxbeard.cyberware.api.CyberwareUserData;
 import flaxbeard.cyberware.client.CyberwareClient;
@@ -40,7 +41,7 @@ public record CyberwareSyncPacket(int entityId, CompoundTag data) implements Cus
                             .result()
                             .orElse(new CyberwareUserData());
                     CyberwareAPI.setCyberwareUserData(livingEntity, userData);
-                    CyberwareClient.logger.info("Data Updated!");
+                    Cyberware.logger.info("Data Updated!");
                 }
             }
         });

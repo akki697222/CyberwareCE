@@ -1,14 +1,11 @@
 package flaxbeard.cyberware.api;
 
 import flaxbeard.cyberware.Cyberware;
-import flaxbeard.cyberware.api.item.CyberwareData;
 import flaxbeard.cyberware.api.item.ICyberware;
 import flaxbeard.cyberware.common.CyberwareAttachments;
-import flaxbeard.cyberware.common.CyberwareComponents;
 import flaxbeard.cyberware.common.network.CyberwareSyncPacket;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
-import flaxbeard.cyberware.api.item.ICyberware.Quality;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -22,36 +19,12 @@ import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
 public class CyberwareAPI {
-    private static final CyberwareData DEFAULT_DATA = new CyberwareData();
-
     public static Map<ItemStack, ICyberware> linkedWare = new HashMap<>();
 
-    @Nonnull
-    public static CyberwareData getCyberwareData(@Nonnull ItemStack stack) {
-        CyberwareData data = stack.get(CyberwareComponents.CYBERWARE_DATA.get());
-        if (data == null) {
-            data = DEFAULT_DATA;
-            stack.set(CyberwareComponents.CYBERWARE_DATA.get(), data);
-        }
-        return data;
-    }
-
     public static boolean areCyberwareStacksEqual(@Nonnull ItemStack one, @Nonnull ItemStack two) {
-        if (one.isEmpty() || two.isEmpty()) return false;
-
-        ItemStack sanitized1 = sanitize(one.copy());
-        ItemStack sanitized2 = sanitize(two.copy());
-        return ItemStack.isSameItemSameComponents(sanitized1, sanitized2);
-    }
-
-    public static ItemStack sanitize(@Nonnull ItemStack stack) {
-        if (!stack.isEmpty()) {
-            stack.remove(CyberwareComponents.CYBERWARE_DATA);
-        }
-        return stack;
+        return ItemStack.isSameItemSameComponents(one, two);
     }
 
     public static ICyberware getCyberware(@Nonnull ItemStack stack) {

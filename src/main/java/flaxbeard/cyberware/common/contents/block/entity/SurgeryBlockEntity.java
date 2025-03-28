@@ -6,7 +6,7 @@ import flaxbeard.cyberware.api.CyberwareSurgeryEvent;
 import flaxbeard.cyberware.api.ICyberwareUserData;
 import flaxbeard.cyberware.api.item.ICyberware;
 import flaxbeard.cyberware.api.item.ICyberware.BodyRegion;
-import flaxbeard.cyberware.client.menu.SurgeryMenu;
+import flaxbeard.cyberware.common.contents.menu.SurgeryMenu;
 import flaxbeard.cyberware.common.*;
 import flaxbeard.cyberware.common.contents.block.SurgeryChamberBlock;
 import flaxbeard.cyberware.common.contents.item.CyberwareItem;
@@ -46,8 +46,13 @@ import static flaxbeard.cyberware.common.contents.block.SurgeryChamberBlock.DOOR
 
 public class SurgeryBlockEntity extends BlockEntity implements BlockEntityTicker<SurgeryBlockEntity>, MenuProvider, Container {
     private ItemStackHandler playerWares = new ItemStackHandler(WARE_SLOT_NUM);
-    private ItemStackHandler wares = new ItemStackHandler(WARE_SLOT_NUM);
-    private ContainerData containerData = new SimpleContainerData(0);
+    private ItemStackHandler wares = new ItemStackHandler(WARE_SLOT_NUM) {
+        @Override
+        protected void onContentsChanged(int slot) {
+            setChanged();
+        }
+    };
+    private final ContainerData containerData = new SimpleContainerData(3);
     private final List<Boolean> discards;
     private final List<Boolean> essentialMissing;
     private int essence = 0;
@@ -65,6 +70,8 @@ public class SurgeryBlockEntity extends BlockEntity implements BlockEntityTicker
 
         this.discards = new ArrayList<>(Collections.nCopies(WARE_SLOT_NUM, false));
         this.essentialMissing = new ArrayList<>(Collections.nCopies(BodyRegion.values().length * 2, false));
+
+        containerData.set(2, -1);
     }
 
     public boolean canUseByPlayer(Player player) {
@@ -339,7 +346,13 @@ public class SurgeryBlockEntity extends BlockEntity implements BlockEntityTicker
 
     @Override
     public void setChanged() {
+        updateEssence();
         super.setChanged();
+
+        if (CyberwareAPI.checkServer(level)) {
+            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
+            Cyberware.logger.debug("SurgeryBlockEntity updated: wares={}", wares.serializeNBT(level.registryAccess()));
+        }
     }
 
     @Override
@@ -350,7 +363,7 @@ public class SurgeryBlockEntity extends BlockEntity implements BlockEntityTicker
 
     @Override
     public boolean stillValid(@NotNull Player player) {
-        return canUseByPlayer(player);
+        return true;
     }
 
     @Override
@@ -404,6 +417,20 @@ public class SurgeryBlockEntity extends BlockEntity implements BlockEntityTicker
     public void tick(@NotNull Level level, @NotNull BlockPos pos, @NotNull BlockState blockState, @NotNull SurgeryBlockEntity surgeryBlockEntity) {
         if (level.isClientSide()) return;
 
+        containerData.set(0, essence);
+
+        if (containerData.get(2) > -1) {
+            int slot = containerData.get(2);
+
+            Cyberware.logger.debug("slot discarded: {}", slot);
+
+            discards.set(slot, !discards.get(slot));
+
+            Cyberware.logger.debug("state: {}", discards.get(slot));
+
+            containerData.set(2, -1);
+        }
+
         if (inProgress && progress < 80) {
             ICyberwareUserData cyberwareUserData = target.getData(CyberwareAttachments.CYBERWARE_USER_DATA);
 
@@ -413,7 +440,7 @@ public class SurgeryBlockEntity extends BlockEntity implements BlockEntityTicker
                 }
 
                 if (progress >= 20 && progress <= 60 && progress % 5 == 0) {
-                    target.hurt(CyberwareDamageTypes.surgery(level), 2F);
+                    target.hurt(CyberwareDamageTypes.surgery(level), 4F);
                 }
 
                 if (progress == 60) {
@@ -426,6 +453,7 @@ public class SurgeryBlockEntity extends BlockEntity implements BlockEntityTicker
             }
         } else if (inProgress) {
             resetSurgery();
+            cooldownAfterSurgery = 60;
         }
 
         if (cooldownAfterSurgery > 0) {
@@ -463,7 +491,6 @@ public class SurgeryBlockEntity extends BlockEntity implements BlockEntityTicker
                     }
 
                     if (!stackPlayer.isEmpty()) {
-                        CyberwareAPI.sanitize(stackPlayer);
                         addItemStack(target, stackPlayer);
                     }
 
@@ -471,7 +498,6 @@ public class SurgeryBlockEntity extends BlockEntity implements BlockEntityTicker
                     indexToInstall++;
                 } else if (!stackPlayer.isEmpty()) {
                     if (discards.get(indexWare)) {
-                        CyberwareAPI.sanitize(stackPlayer);
                         addItemStack(target, stackPlayer);
                     } else {
                         toInstall.set(indexToInstall, playerWares.getStackInSlot(indexWare).copy());
@@ -509,5 +535,9 @@ public class SurgeryBlockEntity extends BlockEntity implements BlockEntityTicker
     @Override
     public @Nullable AbstractContainerMenu createMenu(int i, @NotNull Inventory inventory, @NotNull Player player) {
         return new SurgeryMenu(i, inventory, this, containerData);
+    }
+
+    public int getSlotIncompatible() {
+        return slotIncompatible;
     }
 }
