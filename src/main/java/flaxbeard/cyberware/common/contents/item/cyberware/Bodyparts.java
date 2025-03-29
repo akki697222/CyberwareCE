@@ -20,6 +20,11 @@ public class Bodyparts extends CyberwareItem {
     }
 
     @Override
+    public boolean hasInformation() {
+        return false;
+    }
+
+    @Override
     public int getEssenceCost() {
         return 0;
     }
