@@ -142,17 +142,15 @@ public class SurgeryChamberBlock extends HorizontalDirectionalBlock implements E
     }
 
     public void toggleDoor(Level level, BlockPos pos, BlockState state) {
-        state = state.cycle(DOOR);
-        level.setBlockAndUpdate(pos, state);
-        if (state.getValue(SLAVE)) {
-            BlockState state1 = level.getBlockState(pos.below());
-            state1 = state1.cycle(DOOR);
-            level.setBlockAndUpdate(pos.below(), state1);
-        } else {
-            BlockState state1 = level.getBlockState(pos.above());
-            state1 = state1.cycle(DOOR);
-            level.setBlockAndUpdate(pos.above(), state1);
-        }
+        boolean newDoorState = !state.getValue(DOOR);
+        BlockPos masterPos = state.getValue(SLAVE) ? pos.below() : pos;
+        BlockPos slavePos = state.getValue(SLAVE) ? pos : pos.above();
+
+        BlockState masterState = level.getBlockState(masterPos).setValue(DOOR, newDoorState);
+        BlockState slaveState = level.getBlockState(slavePos).setValue(DOOR, newDoorState);
+
+        level.setBlock(masterPos, masterState, Block.UPDATE_ALL);
+        level.setBlock(slavePos, slaveState, Block.UPDATE_ALL);
     }
 
     @Override
