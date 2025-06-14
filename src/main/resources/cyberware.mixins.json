@@ -1,6 +1,6 @@
 {
   "required": true,
-  "package": "flaxbeard.cyberware.mixin",
+  "package": "akki697222.cyberware.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
 

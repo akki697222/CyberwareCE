@@ -1,6 +1,0 @@
-{
-    "parent": "item/generated",
-    "textures": {
-        "layer0": "cyberware:items/eye_upgrades_hudlens_scavenged"
-    }
-}

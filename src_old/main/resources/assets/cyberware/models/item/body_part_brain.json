@@ -1,6 +1,0 @@
-{
-    "parent": "item/generated",
-    "textures": {
-        "layer0": "cyberware:items/body_part_brain"
-    }
-}

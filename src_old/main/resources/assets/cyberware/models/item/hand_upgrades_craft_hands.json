@@ -1,6 +1,0 @@
-{
-    "parent": "item/generated",
-    "textures": {
-        "layer0": "cyberware:items/hand_upgrades_craft_hands"
-    }
-}

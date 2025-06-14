@@ -1,6 +1,0 @@
-{
-    "parent": "item/generated",
-    "textures": {
-        "layer0": "cyberware:items/manaseer_lens_lens_scavenged"
-    }
-}
