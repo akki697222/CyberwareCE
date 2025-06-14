@@ -3,7 +3,7 @@
   "package": "flaxbeard.cyberware.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "AbstractContainerMenuMixin"
+
   ],
   "injectors": {
     "defaultRequire": 1

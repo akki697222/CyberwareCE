@@ -97,13 +97,13 @@ public interface ICyberware {
 
         private final int slotNumber;
         private final String name;
-        private final boolean sidedSlot;
+        private final boolean sided;
         private final boolean hasEssential;
 
-        BodyRegion(int slotNumber, String name, boolean sidedSlot, boolean hasEssential) {
+        BodyRegion(int slotNumber, String name, boolean sided, boolean hasEssential) {
             this.slotNumber = slotNumber;
             this.name = name;
-            this.sidedSlot = sidedSlot;
+            this.sided = sided;
             this.hasEssential = hasEssential;
         }
 
@@ -129,7 +129,7 @@ public interface ICyberware {
         }
 
         public boolean isSided() {
-            return sidedSlot;
+            return sided;
         }
 
         public boolean hasEssential() {
